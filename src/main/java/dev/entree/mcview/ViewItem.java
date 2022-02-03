@@ -1,12 +1,17 @@
 package dev.entree.mcview;
 
+import lombok.Data;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 
-public record ViewItem(ItemStack item, Function<ClickEvent, ViewAction> onClick) {
+@Data
+public class ViewItem {
+    private final ItemStack item;
+    private final Function<ClickEvent, ViewAction> onClick;
+
     public static ViewItem only(ItemStack item) {
         return new ViewItem(item, ignore -> ViewAction.NOTHING);
     }

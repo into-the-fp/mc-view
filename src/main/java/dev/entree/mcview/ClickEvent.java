@@ -1,6 +1,9 @@
 package dev.entree.mcview;
 
+import lombok.Data;
 import org.bukkit.entity.Player;
 
-public record ClickEvent(Player player) {
+@Data
+public class ClickEvent {
+    private final Player player;
 }

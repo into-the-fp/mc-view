@@ -17,12 +17,12 @@ import java.util.Map;
 
 public class BukkitView {
     public static void openPageView(PageView view, Player player) {
-        PageViewLayout layout = view.layout();
+        PageViewLayout layout = view.getLayout();
         ViewHolder holder = new ViewHolder();
         holder.setView(view);
-        Inventory inv = Bukkit.createInventory(holder, layout.row() * 9, layout.title());
+        Inventory inv = Bukkit.createInventory(holder, layout.getRow() * 9, layout.getTitle());
         holder.setInventory(inv);
-        for (Map.Entry<Integer, ViewItem> pair : view.items().entrySet()) {
+        for (Map.Entry<Integer, ViewItem> pair : view.getItems().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue().getItem());
         }
         player.openInventory(inv);
@@ -31,9 +31,9 @@ public class BukkitView {
     public static void openSimpleView(SimpleView view, Player player) {
         ViewHolder holder = new ViewHolder();
         holder.setView(view);
-        Inventory inv = Bukkit.createInventory(holder, view.row() * 9, view.title());
+        Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
         holder.setInventory(inv);
-        for (Map.Entry<Integer, ViewItem> pair : view.items().entrySet()) {
+        for (Map.Entry<Integer, ViewItem> pair : view.getItems().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue().getItem());
         }
         player.openInventory(inv);
@@ -60,23 +60,23 @@ public class BukkitView {
                 Player p = (Player) e.getWhoClicked();
                 if (view instanceof PageView) {
                     PageView pageView = ((PageView) view);
-                    ViewItem viewItem = pageView.items().get(e.getRawSlot());
+                    ViewItem viewItem = pageView.getItems().get(e.getRawSlot());
                     if (viewItem != null) {
-                        ViewAction action = viewItem.onClick().apply(new ClickEvent(p));
+                        ViewAction action = viewItem.getOnClick().apply(new ClickEvent(p));
                         if (action instanceof ViewAction.Open) {
                             ViewAction.Open open = (ViewAction.Open) action;
-                            Bukkit.getScheduler().runTask(plugin, () -> openView(open.view(), p));
+                            Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p));
                         }
                     }
                     e.setCancelled(true);
                 } else if (view instanceof SimpleView) {
                     SimpleView simpleView = (SimpleView) view;
-                    ViewItem viewItem = simpleView.items().get(e.getRawSlot());
+                    ViewItem viewItem = simpleView.getItems().get(e.getRawSlot());
                     if (viewItem != null) {
-                        ViewAction action = viewItem.onClick().apply(new ClickEvent(p));
+                        ViewAction action = viewItem.getOnClick().apply(new ClickEvent(p));
                         if (action instanceof ViewAction.Open) {
                             ViewAction.Open open = (ViewAction.Open) action;
-                            Bukkit.getScheduler().runTask(plugin, () -> openView(open.view(), p));
+                            Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p));
                         }
                     }
                     e.setCancelled(true);
@@ -94,13 +94,13 @@ public class BukkitView {
                 if (view instanceof PageView) {
                     PageView pageView = ((PageView) view);
                     if (e.getRawSlots().stream()
-                            .anyMatch(a -> pageView.items().get(a) != null)) {
+                            .anyMatch(a -> pageView.getItems().get(a) != null)) {
                         e.setCancelled(true);
                     }
                 } else if (view instanceof SimpleView) {
                     SimpleView simpleView = ((SimpleView) view);
                     if (e.getRawSlots().stream()
-                            .anyMatch(a -> simpleView.items().get(a) != null)) {
+                            .anyMatch(a -> simpleView.getItems().get(a) != null)) {
                         e.setCancelled(true);
                     }
                 }

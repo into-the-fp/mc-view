@@ -1,12 +1,17 @@
 package dev.entree.mcview.page;
 
-public record PageContext(int maxPage, int page) {
+import lombok.Data;
+
+@Data
+public class PageContext {
+    private final int maxPage;
+    private final int page;
 
     public boolean canNext() {
-        return page() < maxPage();
+        return getPage() < getMaxPage();
     }
 
     public boolean canPrev() {
-        return page() >= 2;
+        return getPage() >= 2;
     }
 }

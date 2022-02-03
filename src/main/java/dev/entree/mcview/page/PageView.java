@@ -3,6 +3,7 @@ package dev.entree.mcview.page;
 import dev.entree.mcview.View;
 import dev.entree.mcview.ViewAction;
 import dev.entree.mcview.ViewItem;
+import lombok.Data;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,35 +12,39 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public record PageView(PageViewLayout layout, Map<Integer, ViewItem> items, PageContext context) implements View {
+@Data
+public class PageView implements View {
+       private final PageViewLayout layout;
+       private final Map<Integer, ViewItem> items;
+       private final PageContext context;
 
     public static PageView from(int page, PageViewLayout layout) {
         Map<Integer, ViewItem> items = new HashMap<>();
-        int contentSize = layout.slots().size();
-        int count = layout.items().size();
+        int contentSize = layout.getSlots().size();
+        int count = layout.getItems().size();
         int maxPage = count / contentSize + Math.min(count % contentSize, 1);
         int coercedPage = Math.max(Math.min(page, maxPage), 1);
         PageContext ctx = new PageContext(maxPage, coercedPage);
-        List<Supplier<ViewItem>> subItemList = pagingList(contentSize, coercedPage, layout.items());
+        List<Supplier<ViewItem>> subItemList = pagingList(contentSize, coercedPage, layout.getItems());
         // Contents
         for (int i = 0; i < subItemList.size(); i++) {
-            int slot = layout.slots().get(i);
+            int slot = layout.getSlots().get(i);
             items.put(slot, subItemList.get(i).get());
         }
         // Controls
-        for (Map.Entry<Integer, Function<PageContext, PageViewControl>> pair : layout.controls().entrySet()) {
+        for (Map.Entry<Integer, Function<PageContext, PageViewControl>> pair : layout.getControls().entrySet()) {
             PageViewControl control = pair.getValue().apply(ctx);
             items.put(pair.getKey(), new ViewItem(
-                    control.item(),
+                    control.getItem(),
                     event -> {
-                        PageViewAction action = control.onClick().apply(event);
+                        PageViewAction action = control.getOnClick().apply(event);
                         if (action instanceof PageViewAction.SetPage) {
                             PageViewAction.SetPage setPage = (PageViewAction.SetPage) action;
-                            return new ViewAction.Open(from(setPage.page(), layout));
+                            return new ViewAction.Open(from(setPage.getPage(), layout));
                         } else if (action instanceof PageViewAction.NextPage && ctx.canNext()) {
-                            return new ViewAction.Open(from(ctx.page() + 1, layout));
+                            return new ViewAction.Open(from(ctx.getPage() + 1, layout));
                         } else if (action instanceof PageViewAction.PrevPage && ctx.canPrev()) {
-                            return new ViewAction.Open(from(ctx.page() - 1, layout));
+                            return new ViewAction.Open(from(ctx.getPage() - 1, layout));
                         } else {
                             return ViewAction.NOTHING;
                         }
@@ -50,7 +55,7 @@ public record PageView(PageViewLayout layout, Map<Integer, ViewItem> items, Page
     }
 
     public PageView withPage(int page) {
-        return from(page, layout());
+        return from(page, getLayout());
     }
 
     public static <T> List<T> pagingList(int elementSize, int page, List<T> list) {

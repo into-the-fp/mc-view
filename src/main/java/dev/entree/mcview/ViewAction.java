@@ -1,5 +1,7 @@
 package dev.entree.mcview;
 
+import lombok.Data;
+
 public interface ViewAction {
     Nothing NOTHING = new Nothing();
 
@@ -8,6 +10,8 @@ public interface ViewAction {
         }
     }
 
-    record Open(View view) implements ViewAction {
+    @Data
+    class Open implements ViewAction {
+        private final View view;
     }
 }
