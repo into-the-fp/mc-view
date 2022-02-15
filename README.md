@@ -1,5 +1,7 @@
 # Pure minecraft chest view model
 
+**!! MOVED TO [typecraft-io/bukkit-view](https://github.com/typecraft-io/bukkit-view) !!**
+
 A pure dataset to express minecraft chest view.
 
 ## Initialize
